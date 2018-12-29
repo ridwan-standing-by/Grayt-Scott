@@ -3,23 +3,33 @@ package com.ridwanstandingby.graytscott.domain
 import com.ridwanstandingby.graytscott.render.Animation
 import com.ridwanstandingby.graytscott.render.AnimationParameters
 
-class MandelbrotAnimation(private val parameters: MandelbrotAnimationParameters) :
+class MandelbrotAnimation(parameters: MandelbrotAnimationParameters) :
     Animation<MandelbrotAnimation.MandelbrotAnimationParameters>(parameters) {
 
+    private val pointRe: Double = parameters.pointRe
+    private val pointIm: Double = parameters.pointIm
+    private val thresholdBase: Int = parameters.thresholdBase
+    private val thresholdTimeScale: Int = parameters.thresholdTimeScale
+
+    private val speed: Double = parameters.speed
+    private val maxTime: Int = parameters.maxTime
+    private val zoomBase: Double = parameters.zoomBase
+
+    private val colour: IntArray = parameters.colour
     var time = 0
 
     override fun update() {
 
-        if (time > parameters.maxTime) {
+        if (time > maxTime) {
             time = 0
         }
 
         val aspectRatio = worldX.toDouble() / worldY.toDouble()
-        val zoom = parameters.zoomBase * java.lang.Math.exp(time.toDouble() * parameters.speed)
-        val xMin = parameters.pointRe - aspectRatio / zoom
-        val xMax = parameters.pointRe + aspectRatio / zoom
-        val yMin = parameters.pointIm - 1 / zoom
-        val yMax = parameters.pointIm + 1 / zoom
+        val zoom = zoomBase * java.lang.Math.exp(time.toDouble() * speed)
+        val xMin = pointRe - aspectRatio / zoom
+        val xMax = pointRe + aspectRatio / zoom
+        val yMin = pointIm - 1 / zoom
+        val yMax = pointIm + 1 / zoom
         val xStep = (xMax - xMin) / worldX.toDouble()
         val yStep = (yMax - yMin) / worldY.toDouble()
         val X = DoubleArray(worldX)
@@ -27,8 +37,8 @@ class MandelbrotAnimation(private val parameters: MandelbrotAnimationParameters)
         for (i in 0 until worldX) X[i] = xMin + xStep * i
         for (j in 0 until worldY) Y[j] = yMin + yStep * j
         time++
-        var threshold = parameters.thresholdBase
-        for (n in 0 until time / parameters.thresholdTimeScale)
+        var threshold = thresholdBase
+        for (n in 0 until time / thresholdTimeScale)
             threshold *= 2
 
         for (j in 0 until worldY) {
@@ -50,7 +60,7 @@ class MandelbrotAnimation(private val parameters: MandelbrotAnimationParameters)
                 if (k == threshold) {
                     pixelArray[index] = -0x1000000
                 } else {
-                    pixelArray[index] = parameters.colour[k % 16]
+                    pixelArray[index] = colour[k % 16]
                 }
             }
         }
