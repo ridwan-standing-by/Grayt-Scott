@@ -12,5 +12,5 @@ abstract class Animation<P : AnimationParameters>(parameters: P) {
         }
     }
 
-    abstract fun update()
+    abstract fun update(dt: Double)
 }

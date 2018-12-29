@@ -9,23 +9,23 @@ class MandelbrotAnimation(parameters: MandelbrotAnimationParameters) :
     private val pointRe: Double = parameters.pointRe
     private val pointIm: Double = parameters.pointIm
     private val thresholdBase: Int = parameters.thresholdBase
-    private val thresholdTimeScale: Int = parameters.thresholdTimeScale
+    private val thresholdTimeScale: Double = parameters.thresholdTimeScale
 
     private val speed: Double = parameters.speed
-    private val maxTime: Int = parameters.maxTime
+    private val maxTime: Double = parameters.maxTime
     private val zoomBase: Double = parameters.zoomBase
 
     private val colour: IntArray = parameters.colour
-    var time = 0
+    var time = 0.0
 
-    override fun update() {
+    override fun update(dt: Double) {
 
         if (time > maxTime) {
-            time = 0
+            time = 0.0
         }
 
         val aspectRatio = worldX.toDouble() / worldY.toDouble()
-        val zoom = zoomBase * java.lang.Math.exp(time.toDouble() * speed)
+        val zoom = zoomBase * java.lang.Math.exp(time * speed)
         val xMin = pointRe - aspectRatio / zoom
         val xMax = pointRe + aspectRatio / zoom
         val yMin = pointIm - 1 / zoom
@@ -36,9 +36,9 @@ class MandelbrotAnimation(parameters: MandelbrotAnimationParameters) :
         val Y = DoubleArray(worldY)
         for (i in 0 until worldX) X[i] = xMin + xStep * i
         for (j in 0 until worldY) Y[j] = yMin + yStep * j
-        time++
+        time += dt
         var threshold = thresholdBase
-        for (n in 0 until time / thresholdTimeScale)
+        for (n in 0 until (time / thresholdTimeScale).toInt())
             threshold *= 2
 
         for (j in 0 until worldY) {
@@ -72,10 +72,10 @@ class MandelbrotAnimation(parameters: MandelbrotAnimationParameters) :
         val pointRe: Double = -1.76633656629364184,
         val pointIm: Double = -0.04180922088925528,
         val thresholdBase: Int = 64,
-        val thresholdTimeScale: Int = 800,
+        val thresholdTimeScale: Double = 80.0,
 
-        val speed: Double = 0.01,
-        val maxTime: Int = 4000,
+        val speed: Double = 0.3,
+        val maxTime: Double = 120.0,
         val zoomBase: Double = 0.1,
 
         val colour: IntArray = intArrayOf(
