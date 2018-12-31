@@ -17,7 +17,7 @@ class AnimationRenderTask(private val animationRenderView: AnimationRenderView, 
             }
 
             val newT = System.currentTimeMillis()
-            Log.d("###", "${newT - t}")
+//            Log.d("###", "${newT - t}")
 
             animation.update((newT - t).toDouble()/1000.0)
             t = newT

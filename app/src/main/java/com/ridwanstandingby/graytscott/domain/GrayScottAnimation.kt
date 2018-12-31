@@ -22,6 +22,9 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
     private var a = DoubleArray(worldX * worldY) { 1.0 }
     private var b = DoubleArray(worldX * worldY) { 0.0 }
 
+    private val aLap = DoubleArray(worldX * worldY)
+    private val bLap = DoubleArray(worldX * worldY)
+
     private var nDts = 0
     private var averageDt = 0.0
 
@@ -49,8 +52,29 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
 
         Log.d("####", "average dt: ${averageDt * 1000.0}")
 
-        val aLap = laplacian(a)
-        val bLap = laplacian(b)
+        val aAdj = a.map { it * laplacianAdjacencyFactor }
+        val aDia = a.map { it * laplacianDiagonalFactor }
+        val bAdj = b.map { it * laplacianAdjacencyFactor }
+        val bDia = b.map { it * laplacianDiagonalFactor }
+
+        tickTock("laplacian dt: ") {
+            for (n in 0 until worldX * worldY) {
+                val i = n % worldX
+                val j = n / worldX
+                val ip1 = (i + 1) rem worldX
+                val im1 = (i - 1) rem worldX
+                val jp1 = ((j + 1) rem worldY) * worldX
+                val jm1 = ((j - 1) rem worldY) * worldX
+                val jsc = j * worldX
+                aLap[n] = a[n] * laplacianSelfFactor +
+                        aAdj[ip1 + jsc] + aDia[ip1 + jp1] + aAdj[i + jp1] + aDia[im1 + jp1] +
+                        aAdj[im1 + jsc] + aDia[im1 + jm1] + aAdj[i + jm1] + aDia[ip1 + jm1]
+                bLap[n] = b[n] * laplacianSelfFactor +
+                        bAdj[ip1 + jsc] + bDia[ip1 + jp1] + bAdj[i + jp1] + bDia[im1 + jp1] +
+                        bAdj[im1 + jsc] + bDia[im1 + jm1] + bAdj[i + jm1] + bDia[ip1 + jm1]
+            }
+        }
+
         val ab2 = a.zip(b) { a, b -> a * b * b }
 
         val aNew = DoubleArray(worldX * worldY) { n ->
@@ -68,25 +92,16 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
         }
     }
 
-    private fun laplacian(f: DoubleArray): DoubleArray {
-        val fAdj = f.map { it * laplacianAdjacencyFactor }
-        val fDia = f.map { it * laplacianDiagonalFactor }
-
-        return DoubleArray(worldX * worldY) { n ->
-            val i = n % worldX
-            val j = n / worldX
-            val ip1 = (i + 1) rem worldX
-            val im1 = (i - 1) rem worldX
-            val jp1 = ((j + 1) rem worldY) * worldX
-            val jm1 = ((j - 1) rem worldY) * worldX
-            f[n] * laplacianSelfFactor +
-                    fAdj[ip1 + j * worldX] + fDia[ip1 + jp1] + fAdj[i + jp1] + fDia[im1 + jp1] +
-                    fAdj[im1 + j * worldX] + fDia[im1 + jm1] + fAdj[i + jm1] + fDia[ip1 + jm1]
-        }
-    }
-
     private inline infix operator fun Int.rem(divisor: Int): Int {
         val result = this % divisor
         return if (result < 0) result + divisor else result
+    }
+
+    private inline fun <T>tickTock(message: String, block: () -> T): T {
+        val t1 = System.nanoTime()
+        val result = block()
+        val t2 = System.nanoTime()
+        Log.d("ticktock", message + "${(t2 - t1)/1000000.0}")
+        return result
     }
 }
