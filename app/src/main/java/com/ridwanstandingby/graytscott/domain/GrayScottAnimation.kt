@@ -1,6 +1,5 @@
 package com.ridwanstandingby.graytscott.domain
 
-import android.util.Log
 import com.ridwanstandingby.graytscott.render.Animation
 
 @Suppress("NOTHING_TO_INLINE")
@@ -23,19 +22,23 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
     private var b = DoubleArray(worldX * worldY) { 0.0 }
 
     init {
-        for (i in 85 until 115) {
-            for (j in 85 until 115) {
-                val n = i + j * worldX
-                b[n] = 1.0
+        writeCircle(40, 30, 8)
+        writeCircle(35, 50, 5)
+        writeCircle(60, 60, 10)
+    }
+
+    private fun writeCircle(x: Int, y: Int, r: Int) {
+        for (i in 0 until worldX) {
+            for (j in 0 until worldY) {
+                if ((x-i) * (x-i) + (y-j) * (y-j) < r * r) {
+                    val n = i + j * worldX
+                    b[n] = 1.0
+                }
             }
         }
-//        b[100 + 100 * worldX] = 1.0
     }
 
     override fun update(dt: Double) {
-
-        Log.d("####", "${pixelArray[100 + 100 * worldX]}")
-
         val aLap = laplacian(a)
         val bLap = laplacian(b)
         val ab2 = a.zip(b) { a, b -> a * b * b }
@@ -51,7 +54,7 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
         b = bNew
 
         for (n in 0 until worldX * worldY) {
-            pixelArray[n] = (b[n] * 0x11111111).toInt()
+            pixelArray[n] = (b[n] * 16).toInt() * 1118481 + Int.MIN_VALUE
         }
     }
 
@@ -63,9 +66,9 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
             val i = n % worldX
             val j = n / worldX
             val ip1 = (i + 1) rem worldX
-            val im1 = (i - 1) rem  worldX
-            val jp1 = ((j + 1) rem  worldY) * worldX
-            val jm1 = ((j - 1) rem  worldY) * worldX
+            val im1 = (i - 1) rem worldX
+            val jp1 = ((j + 1) rem worldY) * worldX
+            val jm1 = ((j - 1) rem worldY) * worldX
             f[n] * laplacianSelfFactor +
                     fAdj[ip1 + j * worldX] + fDia[ip1 + jp1] + fAdj[i + jp1] + fDia[im1 + jp1] +
                     fAdj[im1 + j * worldX] + fDia[im1 + jm1] + fAdj[i + jm1] + fDia[ip1 + jm1]

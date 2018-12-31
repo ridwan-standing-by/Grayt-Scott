@@ -14,7 +14,7 @@ class AnimationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        animationRenderView = AnimationRenderView(this, AnimationRule(::GrayScottAnimation, GrayScottAnimationParameters(200, 200)))
+        animationRenderView = AnimationRenderView(this, AnimationRule(::GrayScottAnimation, GrayScottAnimationParameters(100, 100)))
         setContentView(animationRenderView)
     }
 
