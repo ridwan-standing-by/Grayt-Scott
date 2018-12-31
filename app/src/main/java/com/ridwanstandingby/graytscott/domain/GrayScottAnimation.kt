@@ -1,5 +1,6 @@
 package com.ridwanstandingby.graytscott.domain
 
+import android.util.Log
 import com.ridwanstandingby.graytscott.render.Animation
 
 @Suppress("NOTHING_TO_INLINE")
@@ -21,10 +22,13 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
     private var a = DoubleArray(worldX * worldY) { 1.0 }
     private var b = DoubleArray(worldX * worldY) { 0.0 }
 
+    private var nDts = 0
+    private var averageDt = 0.0
+
     init {
-        writeCircle(40, 30, 8)
-        writeCircle(35, 50, 5)
-        writeCircle(60, 60, 10)
+        writeCircle(80, 60, 15)
+        writeCircle(70, 100, 10)
+        writeCircle(120, 120, 20)
     }
 
     private fun writeCircle(x: Int, y: Int, r: Int) {
@@ -39,6 +43,12 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
     }
 
     override fun update(dt: Double) {
+
+        nDts++
+        averageDt = (averageDt * (nDts - 1) + dt) / nDts
+
+        Log.d("####", "average dt: ${averageDt * 1000.0}")
+
         val aLap = laplacian(a)
         val bLap = laplacian(b)
         val ab2 = a.zip(b) { a, b -> a * b * b }
