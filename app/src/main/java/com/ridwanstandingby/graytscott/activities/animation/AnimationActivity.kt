@@ -2,7 +2,8 @@ package com.ridwanstandingby.graytscott.activities.animation
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.ridwanstandingby.graytscott.domain.MandelbrotAnimation
+import com.ridwanstandingby.graytscott.domain.GrayScottAnimation
+import com.ridwanstandingby.graytscott.domain.GrayScottAnimationParameters
 import com.ridwanstandingby.graytscott.render.AnimationRenderView
 import com.ridwanstandingby.graytscott.render.AnimationRule
 
@@ -13,7 +14,7 @@ class AnimationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        animationRenderView = AnimationRenderView(this, AnimationRule(::MandelbrotAnimation, MandelbrotAnimation.MandelbrotAnimationParameters(1000, 600)))
+        animationRenderView = AnimationRenderView(this, AnimationRule(::GrayScottAnimation, GrayScottAnimationParameters(200, 200)))
         setContentView(animationRenderView)
     }
 
