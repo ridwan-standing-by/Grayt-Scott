@@ -1,11 +1,16 @@
 package com.ridwanstandingby.graytscott.domain
 
 import android.util.Log
-import com.ridwanstandingby.graytscott.render.Animation
+import com.ridwanstandingby.graytscott.animation.Animation
+import com.ridwanstandingby.graytscott.animation.AnimationParameters
+import com.ridwanstandingby.graytscott.render.PixelArrayAnimationRenderer
 
 @Suppress("NOTHING_TO_INLINE")
-class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
-    Animation<GrayScottAnimationParameters>(parameters) {
+class GrayScottAnimation(parameters: GrayScottAnimationParameters, renderer: GrayScottAnimationRenderer) :
+    Animation<GrayScottAnimationParameters, GrayScottAnimationRenderer>(parameters, renderer) {
+
+    private val worldX = renderer.worldX
+    private val worldY = renderer.worldY
 
     private val timeScale = parameters.timeScale
 
@@ -37,7 +42,7 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
     private fun writeCircle(x: Int, y: Int, r: Int) {
         for (i in 0 until worldX) {
             for (j in 0 until worldY) {
-                if ((x-i) * (x-i) + (y-j) * (y-j) < r * r) {
+                if ((x - i) * (x - i) + (y - j) * (y - j) < r * r) {
                     val n = i + j * worldX
                     b[n] = 1.0
                 }
@@ -46,7 +51,6 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
     }
 
     override fun update(dt: Double) {
-
         nDts++
         averageDt = (averageDt * (nDts - 1) + dt) / nDts
 
@@ -61,10 +65,10 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
             for (n in 0 until worldX * worldY) {
                 val i = n % worldX
                 val j = n / worldX
-                val ip1 = (i + 1) rem worldX
-                val im1 = (i - 1) rem worldX
-                val jp1 = ((j + 1) rem worldY) * worldX
-                val jm1 = ((j - 1) rem worldY) * worldX
+                val ip1 = (i + 1) loopEnd worldX
+                val im1 = (i - 1) loopStart worldX
+                val jp1 = ((j + 1) loopEnd worldY) * worldX
+                val jm1 = ((j - 1) loopStart worldY) * worldX
                 val jsc = j * worldX
                 aLap[n] = a[n] * laplacianSelfFactor +
                         aAdj[ip1 + jsc] + aDia[ip1 + jp1] + aAdj[i + jp1] + aDia[im1 + jp1] +
@@ -88,20 +92,32 @@ class GrayScottAnimation(parameters: GrayScottAnimationParameters) :
         b = bNew
 
         for (n in 0 until worldX * worldY) {
-            pixelArray[n] = (b[n] * 16).toInt() * 1118481 + Int.MIN_VALUE
+            renderer.pixelArray[n] = (b[n] * 16).toInt() * 1118481 + Int.MIN_VALUE
         }
     }
 
-    private inline infix operator fun Int.rem(divisor: Int): Int {
-        val result = this % divisor
-        return if (result < 0) result + divisor else result
-    }
+    private inline infix fun Int.loopStart(divisor: Int) = if (this < 0) this + divisor else this
 
-    private inline fun <T>tickTock(message: String, block: () -> T): T {
+    private inline infix fun Int.loopEnd(divisor: Int) = if (this < divisor) this else this - divisor
+
+    private inline fun <T> tickTock(message: String, block: () -> T): T {
         val t1 = System.nanoTime()
         val result = block()
         val t2 = System.nanoTime()
-        Log.d("ticktock", message + "${(t2 - t1)/1000000.0}")
+        Log.d("ticktock", message + "${(t2 - t1) / 1000000.0}")
         return result
     }
 }
+
+class GrayScottAnimationParameters(
+    val timeScale: Double = 5.0,
+    val laplacianSelfFactor: Double = -1.0,
+    val laplacianAdjacencyFactor: Double = 0.146446609406726237799577819,
+    val laplacianDiagonalFactor: Double = 0.103553390593273762200422181,
+    val diffusionRateA: Double = 1.0,
+    val diffusionRateB: Double = 0.5,
+    val feedRate: Double = 0.0545,
+    val killRate: Double = 0.062
+) : AnimationParameters()
+
+class GrayScottAnimationRenderer(worldX: Int, worldY: Int) : PixelArrayAnimationRenderer(worldX, worldY)

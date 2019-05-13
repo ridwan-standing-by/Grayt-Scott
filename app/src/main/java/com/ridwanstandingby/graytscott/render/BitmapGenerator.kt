@@ -1,17 +1,18 @@
 package com.ridwanstandingby.graytscott.render
 
 import android.graphics.Bitmap
+import com.ridwanstandingby.graytscott.animation.AnimationRenderer
 
-class BitmapGenerator(private val animation: Animation<*>) {
+class BitmapGenerator(private val x: Int, private val y: Int) {
 
     val bitmap: Bitmap
 
     init {
         val config = Bitmap.Config.ARGB_8888
-        bitmap = Bitmap.createBitmap(animation.worldX, animation.worldY, config)
+        bitmap = Bitmap.createBitmap(x, y, config)
     }
 
-    fun updateBitmap() {
-        bitmap.setPixels(animation.pixelArray, 0, animation.worldX, 0, 0, animation.worldX, animation.worldY)
+    fun updateBitmap(pixelArray: IntArray) {
+        bitmap.setPixels(pixelArray, 0, x, 0, 0, x, y)
     }
 }
