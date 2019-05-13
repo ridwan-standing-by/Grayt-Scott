@@ -1,11 +1,20 @@
 package com.ridwanstandingby.graytscott.domain
 
 import com.ridwanstandingby.graytscott.animation.Animation
+import com.ridwanstandingby.graytscott.animation.AnimationInput
 import com.ridwanstandingby.graytscott.animation.AnimationParameters
 import com.ridwanstandingby.graytscott.render.PixelArrayAnimationRenderer
 
-class MandelbrotAnimation(parameters: MandelbrotAnimationParameters, renderer: MandelbrotAnimationRenderer) :
-    Animation<MandelbrotAnimationParameters, MandelbrotAnimationRenderer>(parameters, renderer) {
+class MandelbrotAnimation(
+    parameters: MandelbrotAnimationParameters,
+    renderer: MandelbrotAnimationRenderer,
+    input: MandelbrotAnimationInput
+) :
+    Animation<MandelbrotAnimationParameters, MandelbrotAnimationRenderer, MandelbrotAnimationInput>(
+        parameters,
+        renderer,
+        input
+    ) {
 
     private val worldX = renderer.worldX
     private val worldY = renderer.worldY
@@ -102,3 +111,5 @@ class MandelbrotAnimationParameters(
 ) : AnimationParameters()
 
 class MandelbrotAnimationRenderer(worldX: Int, worldY: Int) : PixelArrayAnimationRenderer(worldX, worldY)
+
+class MandelbrotAnimationInput : AnimationInput()

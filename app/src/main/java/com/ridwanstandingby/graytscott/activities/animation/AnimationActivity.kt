@@ -7,6 +7,7 @@ import com.ridwanstandingby.graytscott.domain.GrayScottAnimationParameters
 import com.ridwanstandingby.graytscott.domain.GrayScottAnimationRenderer
 import com.ridwanstandingby.graytscott.animation.AnimationRenderView
 import com.ridwanstandingby.graytscott.animation.AnimationRule
+import com.ridwanstandingby.graytscott.domain.GrayScottAnimationInput
 
 class AnimationActivity : AppCompatActivity() {
 
@@ -19,7 +20,8 @@ class AnimationActivity : AppCompatActivity() {
             this, AnimationRule(
                 ::GrayScottAnimation,
                 GrayScottAnimationParameters(),
-                GrayScottAnimationRenderer(1080, 1920)
+                GrayScottAnimationRenderer(1080, 1920),
+                GrayScottAnimationInput()
             )
         )
         setContentView(animationRenderView)

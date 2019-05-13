@@ -1,6 +1,6 @@
 package com.ridwanstandingby.graytscott.animation
 
-class AnimationRunner(private val animationRenderView: AnimationRenderView, private val animation: Animation<*, *>) {
+class AnimationRunner(private val animationRenderView: AnimationRenderView, private val animation: Animation<*, *, *>) {
 
     @Volatile
     private var t = System.nanoTime()

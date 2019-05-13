@@ -2,12 +2,21 @@ package com.ridwanstandingby.graytscott.domain
 
 import android.util.Log
 import com.ridwanstandingby.graytscott.animation.Animation
+import com.ridwanstandingby.graytscott.animation.AnimationInput
 import com.ridwanstandingby.graytscott.animation.AnimationParameters
 import com.ridwanstandingby.graytscott.render.PixelArrayAnimationRenderer
 
 @Suppress("NOTHING_TO_INLINE")
-class GrayScottAnimation(parameters: GrayScottAnimationParameters, renderer: GrayScottAnimationRenderer) :
-    Animation<GrayScottAnimationParameters, GrayScottAnimationRenderer>(parameters, renderer) {
+class GrayScottAnimation(
+    parameters: GrayScottAnimationParameters,
+    renderer: GrayScottAnimationRenderer,
+    input: GrayScottAnimationInput
+) :
+    Animation<GrayScottAnimationParameters, GrayScottAnimationRenderer, GrayScottAnimationInput>(
+        parameters,
+        renderer,
+        input
+    ) {
 
     private val worldX = renderer.worldX
     private val worldY = renderer.worldY
@@ -121,3 +130,5 @@ class GrayScottAnimationParameters(
 ) : AnimationParameters()
 
 class GrayScottAnimationRenderer(worldX: Int, worldY: Int) : PixelArrayAnimationRenderer(worldX, worldY)
+
+class GrayScottAnimationInput : AnimationInput()

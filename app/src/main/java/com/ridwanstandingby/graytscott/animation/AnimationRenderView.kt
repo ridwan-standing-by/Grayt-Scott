@@ -7,7 +7,7 @@ import android.view.SurfaceView
 @SuppressLint("ViewConstructor")
 class AnimationRenderView(
     context: Context,
-    private val animationRule: AnimationRule<*, *, *>
+    private val animationRule: AnimationRule<*, *, *, *>
 ) : SurfaceView(context) {
 
     private lateinit var animationRunner: AnimationRunner
