@@ -2,12 +2,16 @@ package com.ridwanstandingby.graytscott.activities.animation
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.ridwanstandingby.graytscott.domain.GrayScottAnimation
-import com.ridwanstandingby.graytscott.domain.GrayScottAnimationParameters
-import com.ridwanstandingby.graytscott.domain.GrayScottAnimationRenderer
+import android.util.DisplayMetrics
+import android.view.View
+import android.view.WindowManager
 import com.ridwanstandingby.graytscott.animation.AnimationRenderView
 import com.ridwanstandingby.graytscott.animation.AnimationRule
-import com.ridwanstandingby.graytscott.domain.GrayScottAnimationInput
+import com.ridwanstandingby.graytscott.domain.CubeAnimation
+import com.ridwanstandingby.graytscott.domain.CubeAnimationInput
+import com.ridwanstandingby.graytscott.domain.CubeAnimationParameters
+import com.ridwanstandingby.graytscott.domain.CubeAnimationRenderer
+import com.ridwanstandingby.graytscott.math.IntVector2
 
 class AnimationActivity : AppCompatActivity() {
 
@@ -16,12 +20,17 @@ class AnimationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        hideSystemUI()
+        val metrics = DisplayMetrics().also { windowManager.defaultDisplay.getRealMetrics(it) }
+        val screenSize = IntVector2(metrics.widthPixels, metrics.heightPixels)
+
         animationRenderView = AnimationRenderView(
             this, AnimationRule(
-                ::GrayScottAnimation,
-                GrayScottAnimationParameters(),
-                GrayScottAnimationRenderer(1080, 1920),
-                GrayScottAnimationInput()
+                ::CubeAnimation,
+                CubeAnimationParameters(),
+                CubeAnimationRenderer(screenSize),
+                CubeAnimationInput()
             )
         )
         setContentView(animationRenderView)
@@ -35,5 +44,15 @@ class AnimationActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         animationRenderView.pause()
+    }
+
+    private fun hideSystemUI() {
+        supportActionBar?.hide()
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 }

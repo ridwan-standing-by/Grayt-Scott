@@ -3,7 +3,7 @@ package com.ridwanstandingby.graytscott.render
 import android.graphics.Canvas
 import com.ridwanstandingby.graytscott.animation.AnimationRenderer
 
-abstract class PixelArrayAnimationRenderer(worldX: Int, worldY: Int): AnimationRenderer(worldX, worldY) {
+abstract class PixelArrayAnimationRenderer(val worldX: Int, val worldY: Int): AnimationRenderer() {
 
     val pixelArray: IntArray = IntArray(worldX * worldY)
 
