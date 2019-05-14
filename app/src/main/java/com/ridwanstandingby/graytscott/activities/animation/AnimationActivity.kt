@@ -1,5 +1,8 @@
 package com.ridwanstandingby.graytscott.activities.animation
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.DisplayMetrics
@@ -12,6 +15,8 @@ import com.ridwanstandingby.graytscott.domain.CubeAnimationInput
 import com.ridwanstandingby.graytscott.domain.CubeAnimationParameters
 import com.ridwanstandingby.graytscott.domain.CubeAnimationRenderer
 import com.ridwanstandingby.graytscott.math.IntVector2
+import com.ridwanstandingby.graytscott.sensor.LinearAccelerator
+import com.ridwanstandingby.graytscott.sensor.RotationDetector
 
 class AnimationActivity : AppCompatActivity() {
 
@@ -25,12 +30,15 @@ class AnimationActivity : AppCompatActivity() {
         val metrics = DisplayMetrics().also { windowManager.defaultDisplay.getRealMetrics(it) }
         val screenSize = IntVector2(metrics.widthPixels, metrics.heightPixels)
 
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+
         animationRenderView = AnimationRenderView(
             this, AnimationRule(
                 ::CubeAnimation,
                 CubeAnimationParameters(),
                 CubeAnimationRenderer(screenSize),
-                CubeAnimationInput()
+                CubeAnimationInput(RotationDetector(sensorManager, rotationSensor))
             )
         )
         setContentView(animationRenderView)
