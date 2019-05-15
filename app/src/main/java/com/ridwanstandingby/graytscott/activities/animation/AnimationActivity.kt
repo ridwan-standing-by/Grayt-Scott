@@ -4,10 +4,10 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import com.ridwanstandingby.graytscott.animation.AnimationRenderView
 import com.ridwanstandingby.graytscott.animation.AnimationRule
 import com.ridwanstandingby.graytscott.domain.CubeAnimation
@@ -15,7 +15,6 @@ import com.ridwanstandingby.graytscott.domain.CubeAnimationInput
 import com.ridwanstandingby.graytscott.domain.CubeAnimationParameters
 import com.ridwanstandingby.graytscott.domain.CubeAnimationRenderer
 import com.ridwanstandingby.graytscott.math.IntVector2
-import com.ridwanstandingby.graytscott.sensor.LinearAccelerator
 import com.ridwanstandingby.graytscott.sensor.RotationDetector
 
 class AnimationActivity : AppCompatActivity() {

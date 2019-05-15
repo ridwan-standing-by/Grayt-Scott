@@ -2,7 +2,6 @@ package com.ridwanstandingby.graytscott.math
 
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.math.sqrt
 
 data class Quaternion(val t: Double, val x: Double, val y: Double, val z: Double) {
     constructor(angle: Double, axis: Vector3) : this(
