@@ -12,6 +12,7 @@ import com.ridwanstandingby.graytscott.render.Camera
 import com.ridwanstandingby.graytscott.sensor.RotationDetector
 import kotlin.math.exp
 import kotlin.math.log
+import kotlin.math.max
 import kotlin.random.Random
 
 class CubeAnimation(parameters: CubeAnimationParameters, renderer: CubeAnimationRenderer, input: CubeAnimationInput) :
@@ -28,7 +29,9 @@ class CubeAnimation(parameters: CubeAnimationParameters, renderer: CubeAnimation
         renderer.lines = mutableListOf()
 
         cubes.forEach {
-            it.update(dt, renderer.camera)
+            it.update(dt)
+            it.handleBounceOffCameraSides(renderer.camera)
+            it.handleBounceOffMaximumSphere(renderer.camera, parameters.maxSphereScale)
             it.prepareRender(renderer)
         }
     }
@@ -52,13 +55,12 @@ data class Cube(
     private var vertexPPM: FloatVector2 = FloatVector2(0f, 0f)
     private var vertexPPP: FloatVector2 = FloatVector2(0f, 0f)
 
-    fun update(dt: Double, camera: Camera) {
+    fun update(dt: Double) {
         position += velocity * dt
         rotation += angularVelocity * dt
-        handleBounce(camera)
     }
 
-    private fun handleBounce(camera: Camera) {
+    fun handleBounceOffCameraSides(camera: Camera) {
         val vertices =
             listOf(vertexMMM, vertexMMP, vertexMPM, vertexMPP, vertexPMM, vertexPMP, vertexPPM, vertexPPP)
         velocity = when {
@@ -73,6 +75,21 @@ data class Cube(
             else -> velocity
         }
     }
+
+    fun handleBounceOffMaximumSphere(camera: Camera, maxSphereScale: Double) {
+        if (isOffScreen(camera) && isOutsideMaximumSphere(maxSphereScale, camera) && isTravellingRadiallyOutwards()) {
+            velocity = velocity.reflect(position.normalise())
+        }
+    }
+
+    private fun isOffScreen(camera: Camera) = listOf(
+        vertexMMM, vertexMMP, vertexMPM, vertexMPP, vertexPMM, vertexPMP, vertexPPM, vertexPPP
+    ).none { 0 <= it.x && it.x <= camera.screenDimension.x && 0 <= it.y && it.y <= camera.screenDimension.y }
+
+    private fun isOutsideMaximumSphere(maxSphereScale: Double, camera: Camera) =
+        position.size() > maxSphereScale * max(camera.screenDimension.x, camera.screenDimension.y)
+
+    private fun isTravellingRadiallyOutwards() = position dot velocity > 0
 
     fun prepareRender(renderer: CubeAnimationRenderer) {
         val transform = Quaternion(rotation, orientation)
@@ -100,6 +117,7 @@ data class Cube(
 
 class CubeAnimationParameters(
     val numberOfCubes: Int = 100,
+    val maxSphereScale: Double = 2.0,
     private val cubeLengthMin: Double = 10.0,
     private val cubeLengthMax: Double = 200.0,
     private val cubeLengthSkew: Double = 0.04,
